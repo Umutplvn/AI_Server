@@ -42,11 +42,17 @@ module.exports = {
         "write down",
       ];
 
-      if (reminderCheck.some((keyword) => prompt.includes(keyword))) {
+      if (
+        reminderCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
+      ) {
         return "Reminder";
-      } else if (emailCheck.some((keyword) => prompt.includes(keyword))) {
+      } else if (
+        emailCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
+      ) {
         return "Email";
-      } else if (toDoCheck.some((keyword) => prompt.includes(keyword))) {
+      } else if (
+        toDoCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
+      ) {
         return "toDo";
       }
     };
@@ -77,7 +83,7 @@ module.exports = {
         email.response?.candidates[0].content?.parts[0].text.trim();
 
       const subjectText = await model.generateContent(
-        `Generate a clear and professional subject line for the following email content:${prompt}.Without including any placeholders like "[Your Name]". Respond with just the subject line.`
+        `Generate the shortest subject message for the following email content: ${prompt}.`
       );
       const subject =
         subjectText.response?.candidates[0].content?.parts[0].text.trim();
