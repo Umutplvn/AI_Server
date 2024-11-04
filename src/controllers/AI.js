@@ -12,47 +12,15 @@ module.exports = {
     const dateOfToday = new Date();
 
     const analyzeRequest = (prompt) => {
-      const reminderCheck = [
-        "remind me",
-        "add calendar",
-        "reminder",
-        "set a reminder",
-        "schedule",
-        "notify me",
-        "alert me",
-      ];
+      const lowerPrompt = prompt.toLowerCase();
 
-      const emailCheck = [
-        "email him",
-        "email her",
-        "send email",
-        "write an email",
-        "compose email",
-        "forward this",
-        "contact",
-      ];
-
-      const toDoCheck = [
-        "todo list",
-        "todo",
-        "add to do list",
-        "add to do",
-        "create a task",
-        "task list",
-        "write down",
-      ];
-
-      if (
-        reminderCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
-      ) {
+      if (lowerPrompt.includes("remind me")) {
         return "Reminder";
-      } else if (
-        emailCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
-      ) {
+      }
+      if (lowerPrompt.includes("send email")) {
         return "Email";
-      } else if (
-        toDoCheck.some((keyword) => prompt.toLowerCase().includes(keyword))
-      ) {
+      }
+      if (lowerPrompt.includes("add to do")) {
         return "toDo";
       }
     };
@@ -101,6 +69,18 @@ module.exports = {
       };
     };
 
+    const toDoExtract = async (prompt) => {
+      const toDo = await model.generateContent(
+        `Rephrase this message to make it a short and professional to-do list item: ${prompt}`
+      );
+      const toDoMessage =
+        toDo.response?.candidates[0].content?.parts[0].text.trim();
+
+      return {
+        toDoMessage,
+      };
+    };
+
     if (isReminderRequest == "Reminder") {
       const eventDetails = await extractEventDetails(prompt);
       res.status(200).send({
@@ -113,6 +93,18 @@ module.exports = {
       res.status(200).send({
         error: false,
         emailDetails,
+      });
+    } else if (isReminderRequest == "toDo") {
+      const toDoDetails = await toDoExtract(prompt);
+
+      res.status(200).send({
+        error: false,
+        toDoDetails,
+      });
+    } else {
+      res.status(200).send({
+        error: false,
+        result: result?.response?.candidates[0].content?.parts[0].text.trim(),
       });
     }
   },
